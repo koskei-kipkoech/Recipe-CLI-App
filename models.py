@@ -9,6 +9,9 @@ class Category(Base):
     name = Column(String(50), nullable=False)
 
     recipes = relationship('Recipe', back_populates='category')
+
+    def __repr__(self):
+        return f'Category( id={self.id},  name="{self.name}" )'
 class Recipe(Base):
     __tablename__ ='recipes'
     id = Column(Integer, primary_key=True)
@@ -19,7 +22,8 @@ class Recipe(Base):
     category = relationship('Category', back_populates='recipes')
     ingredients = relationship('Ingredient', back_populates='recipes')
 
-
+    def __repr__(self):
+        return f'Recipe( id={self.id},  name="{self.name}",  description="{self.description}",  category_id={self.category_id} )'
 
 class Ingredient(Base):
     __tablename__ = 'ingredients'
@@ -30,5 +34,6 @@ class Ingredient(Base):
     recipe_id = Column(Integer, ForeignKey('recipes.id'))
 
     recipes = relationship('Recipe', back_populates='ingredients')
-    
 
+    def __repr__(self):
+        return f'Ingredient( id={self.id},  name="{self.name}",  quantity={self.quantity},  unit="{self.unit}",  recipe_id={self.recipe_id} )'
