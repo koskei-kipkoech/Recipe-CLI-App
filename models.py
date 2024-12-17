@@ -8,7 +8,7 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
 
-    recipes = relationship('Recipe', back_populates='category', cascade='all,delete-orphans')
+    recipes = relationship('Recipe', back_populates='category', cascade='all,delete-orphan')
 
     def __repr__(self):
         return f'Category( id={self.id},  name="{self.name}" )'
@@ -20,7 +20,7 @@ class Recipe(Base):
     category_id = Column(Integer, ForeignKey('categories.id'))
 
     category = relationship('Category', back_populates='recipes')
-    ingredients = relationship('Ingredient', back_populates='recipe', cascade='all, delete-orphans')
+    ingredients = relationship('Ingredient', back_populates='recipe', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'Recipe( id={self.id},  name="{self.name}",  description="{self.description}", category_id={self.category_id} )'
@@ -33,7 +33,7 @@ class Ingredient(Base):
     unit = Column(String(20), nullable=False)
     recipe_id = Column(Integer, ForeignKey('recipes.id'))
 
-    recipes = relationship('Recipe', back_populates='ingredients')
+    recipe = relationship('Recipe', back_populates='ingredients')
 
     def __repr__(self):
         return f'Ingredient( id={self.id},  name="{self.name}",  quantity={self.quantity},  unit="{self.unit}",  recipe_id={self.recipe_id} )'
