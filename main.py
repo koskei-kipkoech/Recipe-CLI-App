@@ -2,6 +2,7 @@ import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Recipe, Ingredient, Category
+import random
 
 DATABASE_URL = 'sqlite:///recipes.db'
 
@@ -263,6 +264,46 @@ def search_recipe():
     else:
         print("Invalid choice! Please choose 1, 2, or 3.")
 
+def random_recipe_suggestion(session):
+    recipes = session.query(Recipe).all()
+    if recipes:
+        recipe = random.choice(recipes)
+        print(f"Today's Random Suggestion:")
+        print(f"Recipe: {recipe.name}")
+        print(f"Description: {recipe.description}")
+        print(f"Category: {recipe.category.name}")
+        print("Ingredients:")
+        for ingredient in recipe.ingredients:
+            print(f"- {ingredient.name} ({ingredient.quantity} {ingredient.unit})")
+    else:
+        print("No recipes available.")
+
+def statistics_dashboard(session):
+    total_categories = session.query(Category).count()
+    total_recipes = session.query(Recipe).count()
+    total_ingredients = session.query(Ingredient).count()
+
+    print("Statistics Dashboard:")
+    print(f"- Total Categories: {total_categories}")
+    print(f"- Total Recipes: {total_recipes}")
+    print(f"- Total Ingredients: {total_ingredients}")
+
+def delete_category_with_recipes(session):
+    view_category()
+    category_name = input("Enter the category name: ")
+    category = session.query(Category).filter_by(name=category_name).first()
+
+    if category:
+        confirmation = input(f"Are you sure you want to delete '{category.name}' and all associated recipes? (yes/no): ")
+        if confirmation.lower() == 'yes':
+            session.delete(category)
+            session.commit()
+            print(f"Category '{category.name}' and its recipes were deleted successfully.")
+        else:
+            print("Operation canceled.")
+    else:
+        print(f"Category '{category_name}' not found.")
+
 def main_menu():
     while True:
         print("\n========  RECIPE   APPLICSTION   CLI  ==========")
@@ -280,7 +321,10 @@ def main_menu():
         print("12. Get Recipes with the Same Category")
         print("13. Get Ingredients for a specific Recipe")
         print("14. Search Recipe by Name, Category, and Recipe")
-        print("15. Exit ")
+        print("15. Random Recipe Suggestion")
+        print("16. Delete category and Recipe")
+        print("17. View Statistics Dashboard")
+        print("18. Exit ")
         print("\n==============================================")
         choice = input("Enter your Choice: ")
         if choice == "1":
@@ -312,8 +356,17 @@ def main_menu():
         elif choice == "14":
             search_recipe()
         elif choice == "15":
+            random_recipe_suggestion(session)
+        elif choice == "16":
+            delete_category_with_recipes(session)
+        elif choice == "17":
+            statistics_dashboard(session)
+        elif choice == "18":
             print("Exiting...")
             sys.exit(0)
+        else:
+            print("Invalid Choice! Please try again.")
+
 
 
 if __name__ == "__main__":
