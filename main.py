@@ -346,6 +346,7 @@ def main_menu():
         print("18. View Recent Search")
         print("19. Exit ")
         print("\n==============================================")
+        
         choice = input("Enter your Choice: ")
         if choice == "1":
             add_category()
