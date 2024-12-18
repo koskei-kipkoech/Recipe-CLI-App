@@ -10,6 +10,8 @@ engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+recent_searches = []
+
 def init_db():
     #initialize the database incase its not there already
     Base.metadata.create_all(engine)
@@ -29,8 +31,9 @@ def view_category():
     if not categories:
         print("No categories found.")
     else:
-        for category in categories:
-            print(f"Category ID: {category.id} and Name: '{category.name}' ")
+        category_list =  [(category.id, category.name) for category in categories]
+        for category in category_list:
+            print(f"Category ID: {category[0]}  Name: '{category[1]}' ")
 
 #update categories
 def update_category():
@@ -210,57 +213,60 @@ def get_ingredients_by_recipe():
             print(f"Ingredient ID: {ingredient.id}  Name: '{ingredient.name}'  Quantity/Unit: '{ingredient.quantity}{ingredient.unit}'")
 
 def search_recipe():
+    global recent_searches
+    search_options = {
+        "1": "Recipe Name",
+        "2": "Category Name",
+        "3": "Ingredient Name"
+    }
     print("Search by:")
-    print("1. Recipe Name")
-    print("2. Category Name")
-    print("3. Ingredient Name")
-    search_choice = input("Enter your choice (1/2/3): ")
+    for key, value in search_options.items():
+        print(f"{key}. {value}")
 
-    if search_choice == "1":
+    choice = input("Enter your choice (1/2/3): ")
+
+    if choice == "1":
         # Search by recipe name
         recipe_name = input("Enter recipe name to search: ").strip()
         recipes = session.query(Recipe).filter(Recipe.name.ilike(f"%{recipe_name}%")).all()
-
         if not recipes:
             print(f"No recipes found with the name '{recipe_name}'.")
         else:
+            # Add to recent searches
+            recent_searches.append({"type": "Recipe Name", "query": recipe_name})
             for recipe in recipes:
                 print(f"\nRecipe Name: {recipe.name}")
                 print(f"Category: {recipe.category.name}")
                 print("Ingredients:")
                 for ingredient in recipe.ingredients:
                     print(f" -> {ingredient.name} ({ingredient.quantity} {ingredient.unit})")
-    
-    elif search_choice == "2":
+    elif choice == "2":
         # Search by category name
         category_name = input("Enter category name to search: ").strip()
         category = session.query(Category).filter(Category.name.ilike(f"%{category_name}%")).first()
-
         if not category:
             print(f"No category found with the name '{category_name}'.")
         else:
+            # Add to recent searches
+            recent_searches.append({"type": "Category Name", "query": category_name})
             print(f"\nCategory: {category.name}")
             print("Recipes:")
             for recipe in category.recipes:
                 print(f" - {recipe.name}")
-                print(" Ingredients:")
-                for ingredient in recipe.ingredients:
-                    print(f"   -> {ingredient.name} ({ingredient.quantity} {ingredient.unit})")
-    
-    elif search_choice == "3":
+    elif choice == "3":
         # Search by ingredient name
         ingredient_name = input("Enter ingredient name to search: ").strip()
         ingredients = session.query(Ingredient).filter(Ingredient.name.ilike(f"%{ingredient_name}%")).all()
-
         if not ingredients:
             print(f"No ingredients found with the name '{ingredient_name}'.")
         else:
+            # Add to recent searches
+            recent_searches.append({"type": "Ingredient Name", "query": ingredient_name})
             for ingredient in ingredients:
                 recipe = ingredient.recipe
                 print(f"\nRecipe Name: {recipe.name}")
                 print(f"Category: {recipe.category.name}")
                 print(f"Ingredient: {ingredient.name} ({ingredient.quantity} {ingredient.unit})")
-    
     else:
         print("Invalid choice! Please choose 1, 2, or 3.")
 
@@ -278,15 +284,21 @@ def random_recipe_suggestion(session):
     else:
         print("No recipes available.")
 
-def statistics_dashboard(session):
+def statistics_dashboard():
     total_categories = session.query(Category).count()
     total_recipes = session.query(Recipe).count()
     total_ingredients = session.query(Ingredient).count()
 
+    stats = [
+        (" Total Categories: ", total_categories),
+        (" Total Recipes: ", total_recipes),
+        (" Total Ingredients: ", total_ingredients)
+    ]
+
     print("Statistics Dashboard:")
-    print(f"- Total Categories: {total_categories}")
-    print(f"- Total Recipes: {total_recipes}")
-    print(f"- Total Ingredients: {total_ingredients}")
+    for stat in stats:
+        print(f"-> {stat[0]} : {stat[1]}")
+    
 
 def delete_category_with_recipes(session):
     view_category()
@@ -304,6 +316,13 @@ def delete_category_with_recipes(session):
     else:
         print(f"Category '{category_name}' not found.")
 
+def view_recent_searches():
+    if not recent_searches:
+        print("No recent searches available.")
+    else:
+        print("\nRecent Searches:")
+        for idx, search in enumerate(recent_searches[-5:], 1):  # Show the last 5 searches
+            print(f"{idx}. {search['type']}: {search['query']}")
 def main_menu():
     while True:
         print("\n========  RECIPE   APPLICSTION   CLI  ==========")
@@ -324,7 +343,8 @@ def main_menu():
         print("15. Random Recipe Suggestion")
         print("16. Delete category and Recipe")
         print("17. View Statistics Dashboard")
-        print("18. Exit ")
+        print("18. View Recent Search")
+        print("19. Exit ")
         print("\n==============================================")
         choice = input("Enter your Choice: ")
         if choice == "1":
@@ -360,8 +380,10 @@ def main_menu():
         elif choice == "16":
             delete_category_with_recipes(session)
         elif choice == "17":
-            statistics_dashboard(session)
+            statistics_dashboard()
         elif choice == "18":
+            view_recent_searches()
+        elif choice == "19":
             print("Exiting...")
             sys.exit(0)
         else:
