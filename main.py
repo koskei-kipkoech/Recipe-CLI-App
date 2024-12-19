@@ -24,7 +24,7 @@ def init_db():
 def hello(name):
     while not name.strip():
         name = click.prompt("Please Enter Name to Continue ✍🏽",type=str).strip()
-    click.echo(f"\nHello {name} 😊\n")
+    click.echo(f"\nHello {name} 😊 Welcome to My Application\n")
     click.echo("==============================================")
     click.echo("          RECIPE   APPLICATION   CLI          ")
     click.echo("==============================================\n")
