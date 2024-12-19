@@ -1,6 +1,6 @@
 ## Recipe Management CLI Application
 
-A Command-Line Interface (CLI) application for managing recipes, categories, and ingredients. This project uses Python and SQLAlchemy to perform CRUD operations on a SQLite database and also alembic for migrations.
+A Command-Line Interface (CLI) application for managing recipes, categories, and ingredients. This project uses Python and SQLAlchemy to perform CRUD operations on a SQLite database and also alembic for migrations, along with **click** for user interaction.
 
 ## Features
 
@@ -26,12 +26,17 @@ A Command-Line Interface (CLI) application for managing recipes, categories, and
   - Display insights about the database, such as the number of recipes and categories.
 
 - **Database Initialization**:
+
   - Setup and initialize the SQLite database schema.
+
+- **User-Friendly CLI**:
+  -Interactive CLI commands with **click** to guide you through the operations.
 
 ### Prerequisites
 
 - Python 3.8+
 - `pipenv` (Python package manager)
+- click (for CLI welcome message)
 
 ### Setup
 
@@ -73,7 +78,8 @@ Follow the menu prompts to perform various operations:
 
 - [SQLAlchemy] - ORM for database interaction.
 - [SQLite] - Lightweight database.
-- [alembic] - helps in migrations
+- [alembic] - helps in migrations.
+- [click] - for CLI interaction.
 
 Install dependencies using:
 
@@ -101,4 +107,4 @@ pipenv install
 ## Acknowledgements
 
 - Inspired by the need to simplify recipe and ingredient management.
-- Built with Python and SQLAlchemyand Alembic.
+- Built with Python, SQLAlchemyand, Alembic and Click.
