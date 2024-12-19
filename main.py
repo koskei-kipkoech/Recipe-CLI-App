@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Recipe, Ingredient, Category
 import random
+import click
 
 DATABASE_URL = 'sqlite:///recipes.db'
 
@@ -12,10 +13,22 @@ session = Session()
 
 recent_searches = []
 
+
 def init_db():
     #initialize the database incase its not there already
     Base.metadata.create_all(engine)
     print("Database Initialized")
+
+@click.command()
+@click.option("--name", prompt = "Enter Your User Name to Continue 😊 ", help = "The name of User")
+def hello(name):
+    while not name.strip():
+        name = click.prompt("Please Enter Name to Continue ✍🏽",type=str).strip()
+    click.echo(f"\nHello {name} 😊\n")
+    click.echo("==============================================")
+    click.echo("          RECIPE   APPLICATION   CLI          ")
+    click.echo("==============================================\n")
+    main_menu(name)
 
 #Add category
 def add_category():
@@ -323,9 +336,12 @@ def view_recent_searches():
         print("\nRecent Searches:")
         for idx, search in enumerate(recent_searches[-5:], 1):  # Show the last 5 searches
             print(f"{idx}. {search['type']}: {search['query']}")
-def main_menu():
+def main_menu(user_name):
     while True:
-        print("\n========  RECIPE   APPLICSTION   CLI  ==========")
+        """
+        Displays the main menu and handles user input.
+        """
+        print("\n==============================================")
         print("1. Add Category")
         print("2. View Categories")
         print("3. Add Recipe")
@@ -385,8 +401,8 @@ def main_menu():
         elif choice == "18":
             view_recent_searches()
         elif choice == "19":
-            print("Exiting...")
-            sys.exit(0)
+            print(f"Exiting... Goodbye {user_name} 👋")
+            sys.exit()
         else:
             print("Invalid Choice! Please try again.")
 
@@ -394,7 +410,7 @@ def main_menu():
 
 if __name__ == "__main__":
     init_db()
-    main_menu()
+    hello()
 
 
 
