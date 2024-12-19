@@ -31,7 +31,7 @@ A Command-Line Interface (CLI) application for managing recipes, categories, and
 
 - **User-Friendly CLI**:
 
-- Interactive CLI commands with **click** to guide you through the operations.
+  - Interactive CLI commands with **click** to guide you through the operations.
 
 ### Prerequisites
 
